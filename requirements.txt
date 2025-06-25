@@ -1,0 +1,11 @@
+trl 
+transformers 
+datasets 
+accelerate 
+peft 
+bitsandbytes
+matplotlib
+wandb
+huggingface-hub
+# # if you want to use vllm as a backend for the rollout - speedsup training for large and real experiments
+# trl[vllm]
