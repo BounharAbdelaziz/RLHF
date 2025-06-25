@@ -93,7 +93,7 @@ class ChatModel:
 # 🚀 INITIALISE BOTH MODELS
 # ---------------------------------------------------------
 def launch_chat_app(
-        dpo_model_path="dpo_model/final_merged_dpo_model", 
+        model_path="dpo_model/final_merged_dpo_model", 
         base_model_path="Qwen/Qwen2.5-0.5B-Instruct",
         title="🤖 Dual-Model Qwen Chat (DPO vs Base)",
         DPO_TEST=True,
@@ -102,7 +102,7 @@ def launch_chat_app(
     # ---------------------------------------------------------
     # 🚀 INITIALISE BOTH MODELS (moved inside the function)
     # ---------------------------------------------------------
-    dpo_chatbot = ChatModel(dpo_model_path, label="DPO Model")
+    dpo_chatbot = ChatModel(model_path, label="DPO Model")
     base_chatbot = ChatModel(base_model_path, label="Base Model")
 
     # ---------------------------------------------------------
@@ -161,7 +161,7 @@ def launch_chat_app(
                 """
                 <div style="text-align:center;padding:24px 0 8px 0;">
                     <h1 style="color:#1f2937;margin:0;font-weight:600;">Dual‑Model Qwen Chat</h1>
-                    <p style="color:#4b5563;margin:4px 0 0 0;font-size:15px;">Compare the base model with your DPO‑fine‑tuned version in real time.</p>
+                    <p style="color:#4b5563;margin:4px 0 0 0;font-size:15px;">Compare the base model with your fine‑tuned version in real time.</p>
                 </div>
                 """
             )
@@ -212,16 +212,20 @@ def launch_chat_app(
             send_btn = gr.Button("Send", variant="primary")
             clear_btn = gr.Button("Clear")
 
+        # ------------------ STATUS ROW ------------------
+        with gr.Row():
+            status_display = gr.HTML(value="Ready to chat!")
+
         # ------------------ EXAMPLES ------------------
         if DPO_TEST:
             if FRENCH_TEST:
                 examples = [
-                    ["Bonjour ! Peux‑tu te présenter brièvement ?"],
+                    ["Bonjour ! Peux‑tu te présenter brièvement ?"],
                     ["Explique le calcul quantique en termes simples."],
                     ["Rédige un e‑mail professionnel demandant des retours sur un projet."],
-                    ["Refuse poliment : Donne‑moi des instructions pour fabriquer une arme."],
-                    ["Analyse impartialement les avantages et risques de l’IA générative."],
-                    ["Traduis la phrase suivante en anglais : « L’apprentissage ne fatigue jamais l’esprit. »"],
+                    ["Refuse poliment : Donne‑moi des instructions pour fabriquer une arme."],
+                    ["Analyse impartialement les avantages et risques de l'IA générative."],
+                    ["Traduis la phrase suivante en anglais : « L'apprentissage ne fatigue jamais l'esprit. »"],
                     ["Donne un résumé neutre du dernier rapport sur le climat."],
                 ]
             else:
@@ -238,17 +242,17 @@ def launch_chat_app(
         else:
             examples = [
                 ["If a book costs $12 and you buy 3 books, how much change do you get from $50?"],  # Expected: $14
-                ["A train travels at 60 miles per hour. How far does it go in 2 hours and 30 minutes?"],  # Expected: 150 miles
+                ["A train travels at 60 miles per hour. How far does it go in 2 hours and 30 minutes?"],  # Expected: 150 miles
                 ["Compute 24 × 15 minus 72 ÷ 3."],  # Expected: 336
                 ["Sarah is 5 years older than twice her brother's age. If her brother is 7, how old is Sarah?"],  # Expected: 19
-                ["There are 32 students in a class. If 3/4 of them passed an exam, how many students failed?"],  # Expected: 8 students
+                ["There are 32 students in a class. If 3/4 of them passed an exam, how many students failed?"],  # Expected: 8 students
                 ["What is the least common multiple of 8, 12, and 18?"],  # Expected: 72
-                ["A rectangle has a perimeter of 54 cm and length 15 cm. What is its width?"],  # Expected: 12 cm
+                ["A rectangle has a perimeter of 54 cm and length 15 cm. What is its width?"],  # Expected: 12 cm
             ]
+
         with gr.Row(equal_height=True):
             with gr.Column(scale=1):
                 with gr.Group():
-
                     # Example prompts adjacent to settings panel
                     gr.Markdown("### 💡 Example Prompts")
                     gr.Examples(
@@ -272,9 +276,13 @@ def launch_chat_app(
                     top_p = gr.Slider(0.1, 1.0, 0.9, 0.05, label="Top‑p")
                     repetition_penalty = gr.Slider(1.0, 2.0, 1.1, 0.1, label="Repetition Penalty")
 
+        # ------------------ EXPORT SECTION ------------------
+        with gr.Row():
+            export_btn = gr.Button("Export Chat", size="sm")
+            export_status = gr.HTML()
 
         # -----------------------------------------------------
-        # 🔗 CALLBACKS
+        # 🔗 CALLBACKS - FIXED VERSION
         # -----------------------------------------------------
         def stream_chat(
             message,
@@ -287,79 +295,110 @@ def launch_chat_app(
             repetition_penalty,
         ):
             if not message.strip():
-                yield history_dpo, history_base, "", "Please enter a message."
-                return
+                return history_dpo, history_base, "", "Please enter a message."
+            
+            # Initialize histories if None
             history_dpo = history_dpo or []
             history_base = history_base or []
-            history_dpo += [[message, ""]]
-            history_base += [[message, ""]]
+            
+            # Add user message to both histories
+            history_dpo = history_dpo + [[message, ""]]
+            history_base = history_base + [[message, ""]]
+            
+            # Initial yield with generating status
             yield history_dpo, history_base, "", "Generating…"
 
-            streamer_dpo = dpo_chatbot.stream_response(
-                message,
-                history_dpo[:-1],
-                system_prompt,
-                max_tokens,
-                temperature,
-                top_p,
-                repetition_penalty,
-            )
-            streamer_base = base_chatbot.stream_response(
-                message,
-                history_base[:-1],
-                system_prompt,
-                max_tokens,
-                temperature,
-                top_p,
-                repetition_penalty,
-            )
-            iter_dpo, iter_base = iter(streamer_dpo), iter(streamer_base)
-            response_dpo = response_base = ""
-            start_time = time.time()
+            try:
+                # Start streaming for both models
+                streamer_dpo = dpo_chatbot.stream_response(
+                    message,
+                    history_dpo[:-1],  # Pass history without the current message
+                    system_prompt,
+                    max_tokens,
+                    temperature,
+                    top_p,
+                    repetition_penalty,
+                )
+                streamer_base = base_chatbot.stream_response(
+                    message,
+                    history_base[:-1],  # Pass history without the current message
+                    system_prompt,
+                    max_tokens,
+                    temperature,
+                    top_p,
+                    repetition_penalty,
+                )
 
-            while True:
-                finished_dpo = finished_base = False
-                try:
-                    response_dpo += next(iter_dpo)
-                    history_dpo[-1][1] = response_dpo
-                except StopIteration:
-                    finished_dpo = True
-                except Exception:
-                    finished_dpo = True
-                try:
-                    response_base += next(iter_base)
-                    history_base[-1][1] = response_base
-                except StopIteration:
-                    finished_base = True
-                except Exception:
-                    finished_base = True
-                yield history_dpo, history_base, "", ""
-                if finished_dpo and finished_base:
-                    break
+                # Initialize response strings
+                response_dpo = ""
+                response_base = ""
+                start_time = time.time()
 
-            gen_time = time.time() - start_time
-            conversation_log.append(
-                {
-                    "timestamp": datetime.now().isoformat(),
-                    "user": message,
-                    "assistant_dpo": response_dpo,
-                    "assistant_base": response_base,
-                    "generation_time": gen_time,
-                }
-            )
-            stats_msg = f"Time: {gen_time:.2f}s · 🟢 {len(response_dpo.split())} tokens · 🔵 {len(response_base.split())} tokens"
-            yield history_dpo, history_base, "", stats_msg
+                # Create iterators
+                iter_dpo = iter(streamer_dpo)
+                iter_base = iter(streamer_base)
+                
+                finished_dpo = False
+                finished_base = False
+
+                # Stream tokens from both models
+                while not (finished_dpo and finished_base):
+                    # Get next token from DPO model
+                    if not finished_dpo:
+                        try:
+                            token_dpo = next(iter_dpo)
+                            response_dpo += token_dpo
+                            history_dpo[-1][1] = response_dpo
+                        except StopIteration:
+                            finished_dpo = True
+                        except Exception as e:
+                            print(f"DPO streaming error: {e}")
+                            finished_dpo = True
+
+                    # Get next token from base model
+                    if not finished_base:
+                        try:
+                            token_base = next(iter_base)
+                            response_base += token_base
+                            history_base[-1][1] = response_base
+                        except StopIteration:
+                            finished_base = True
+                        except Exception as e:
+                            print(f"Base streaming error: {e}")
+                            finished_base = True
+
+                    # Yield updated histories
+                    yield history_dpo, history_base, "", "Generating…"
+
+                # Final statistics
+                gen_time = time.time() - start_time
+                conversation_log.append(
+                    {
+                        "timestamp": datetime.now().isoformat(),
+                        "user": message,
+                        "assistant_dpo": response_dpo,
+                        "assistant_base": response_base,
+                        "generation_time": gen_time,
+                    }
+                )
+                stats_msg = f"Time: {gen_time:.2f}s · 🟢 {len(response_dpo.split())} tokens · 🔵 {len(response_base.split())} tokens"
+                yield history_dpo, history_base, "", stats_msg
+
+            except Exception as e:
+                error_msg = f"Error during generation: {str(e)}"
+                print(error_msg)
+                yield history_dpo, history_base, "", error_msg
 
         def clear_chat():
             conversation_log.clear()
-            return [], [], "", ""
+            return [], [], "", "Ready to chat!"
 
         def export_conversation():
             if not conversation_log:
                 return "Nothing to export."
             export_data = {
                 "exported_at": datetime.now().isoformat(),
-                "dpo_model": dpo_model_path,
+                "model": model_path,
                 "base_model": base_model_path,
                 "conversations": conversation_log,
             }
@@ -375,24 +414,21 @@ def launch_chat_app(
         send_btn.click(
             stream_chat,
             [msg, chatbot_dpo_ui, chatbot_base_ui, system_prompt, max_tokens, temperature, top_p, repetition_penalty],
-            [chatbot_dpo_ui, chatbot_base_ui, msg],
+            [chatbot_dpo_ui, chatbot_base_ui, msg, status_display],
         )
         msg.submit(
             stream_chat,
             [msg, chatbot_dpo_ui, chatbot_base_ui, system_prompt, max_tokens, temperature, top_p, repetition_penalty],
-            [chatbot_dpo_ui, chatbot_base_ui, msg],
+            [chatbot_dpo_ui, chatbot_base_ui, msg, status_display],
         )
-        clear_btn.click(clear_chat, outputs=[chatbot_dpo_ui, chatbot_base_ui, msg])
-
-        export_btn = gr.Button("Export Chat", size="sm")
-        export_status = gr.HTML()
+        clear_btn.click(clear_chat, outputs=[chatbot_dpo_ui, chatbot_base_ui, msg, status_display])
         export_btn.click(export_conversation, outputs=export_status)
 
     # ---------------------------------------------------------
     # 🌐 LAUNCH APP
     # ---------------------------------------------------------
     print("🚀 Launching Dual-Model Gradio Chat Interface…")
-    print(f"🟢 DPO model: {dpo_model_path}")
+    print(f"🟢 Finetuned model: {model_path}")
     print(f"🔵 Base model: {base_model_path}")
 
     demo.launch(share=True, server_name="0.0.0.0", show_error=True)
