@@ -1,6 +1,6 @@
-# 🤖 RLHF Training Workshop (DPO + GRPO)
+# 🤖 RLHF & RLVR Training Workshop (DPO + GRPO)
 
-This repository demonstrates how to improve language models using **Direct Preference Optimization (DPO)** and **Group Relative Policy Optimization (GRPO)**. It is designed for a hands-on tutorial with a **student branch** (TODOs) and a **solution branch**.
+This repository demonstrates how to improve language models using **Direct Preference Optimization (DPO)** and **Group Relative Policy Optimization (GRPO)**. It is designed for a hands-on tutorial with a **student branch** (TODOs) and a **solution branch** (main branch).
 
 ## 🧠 What You’ll Learn
 
@@ -16,8 +16,6 @@ This repository demonstrates how to improve language models using **Direct Prefe
 - `chat_app.py` is the Gradio comparison UI.
 - `utils.py` contains the LoRA merge helper.
 - `presentation.pdf` and `presentation.pptx` are the slides.
-- `docs/STUDENT.md` is the step-by-step student flow.
-- `docs/INSTRUCTOR.md` is the facilitator run-of-show.
 
 ## 🚀 Quickstart (Local)
 
@@ -42,13 +40,33 @@ This repository demonstrates how to improve language models using **Direct Prefe
 ```
 .
 ├── main.ipynb         # DPO & GRPO training, merging, testing (solution)
-├── student.ipynb      # TODO version (used to build student branch)
 ├── chat_app.py        # Gradio chat app for model comparison
 ├── utils.py           # Utilities (merging, testing)
 ├── docs/              # Student & instructor guides
 ├── presentation.*     # Slides
 └── requirements.txt   # Python dependencies
 ```
+
+# Instructor Guide
+
+**Suggested run-of-show (90 minutes)**
+1. Intro and goals.
+2. LLM training in practice. DPO & GRPO concepts. When to use each one? (slide 2-8)
+3. DPO hands-on. Students complete the DPO TODOs and run training.
+4. GRPO hands-on. Students complete the GRPO TODOs and run training.
+5. (optional) compare models in the chat app and discuss results.
+6. Risks and safety. Use slides 9 to 12 for discussion.
+
+**Common pitfalls to watch**
+- Missing `WANDB_API_KEY` or Hugging Face login.
+- GPU not available or incompatible PyTorch build.
+- Running out of VRAM when using larger models.
+
+**Discussion questions**
+- Why does DPO work without an explicit reward model?
+- When would GRPO be worth the extra compute cost?
+- What kinds of reward hacking could appear here?
+
 
 ## ✅ Notes
 
