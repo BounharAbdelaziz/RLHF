@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.venv/
+venv/
+
+# Env files
+.env
+.env.*
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Experiment outputs
+wandb/
+dpo_model/
+grpo_model/
+trainer_output/
+grpo_output/
+chat_export_*.json
+
+# Model artifacts
+*.safetensors
+*.bin
+*.pt
+*.ckpt

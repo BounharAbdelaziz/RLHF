@@ -1,0 +1,9 @@
+trl 
+transformers 
+datasets 
+accelerate 
+peft 
+bitsandbytes
+gradio
+matplotlib
+wandb
