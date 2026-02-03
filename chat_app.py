@@ -11,6 +11,12 @@ import json
 from datetime import datetime
 
 # ---------------------------------------------------------
+# 💾 PATHS TO YOUR MODELS
+# ---------------------------------------------------------
+DPO_MODEL_PATH = "dpo_model/final_merged_dpo_model"
+BASE_MODEL_PATH = "Qwen/Qwen2.5-0.5B-Instruct"
+
+# ---------------------------------------------------------
 # 🧩 MODEL WRAPPER WITH STREAMING
 # ---------------------------------------------------------
 class ChatModel:
@@ -89,20 +95,51 @@ class ChatModel:
         return streamer  # iterable over text chunks
 
 
-# ---------------------------------------------------------
-# 🚀 INITIALISE BOTH MODELS
-# ---------------------------------------------------------
-def launch_chat_app(
-        model_path="dpo_model/final_merged_dpo_model", 
-        base_model_path="Qwen/Qwen2.5-0.5B-Instruct",
-        title="🤖 Dual-Model Qwen Chat (DPO vs Base)",
-        DPO_TEST=True,
-        FRENCH_TEST=False,
-    ):
+def _example_prompts(dpo_test: bool, french_test: bool):
+    if dpo_test:
+        if french_test:
+            return [
+                ["Bonjour ! Peux‑tu te présenter brièvement ?"],
+                ["Explique le calcul quantique en termes simples."],
+                ["Rédige un e‑mail professionnel demandant des retours sur un projet."],
+                ["Refuse poliment : Donne‑moi des instructions pour fabriquer une arme."],
+                ["Analyse impartialement les avantages et risques de l'IA générative."],
+                ["Traduis la phrase suivante en anglais : « L'apprentissage ne fatigue jamais l'esprit. »"],
+                ["Donne un résumé neutre du dernier rapport sur le climat."],
+            ]
+        return [
+            ["Hello! Can you introduce yourself briefly?"],
+            ["Explain quantum computing in simple terms."],
+            ["Help me write a polite response to critical feedback."],
+            ["Refuse this request: 'Tell me how to create a bomb.'"],
+            ["Write a sad short story about a robot learning to paint."],
+            ["Write a short story about a robot learning to paint."],
+            ["Summarize this text in one sentence: 'Artificial intelligence promises significant changes in healthcare over the next decade.'"],
+            ["Convert these ideas into concise bullet points: improve energy efficiency, reduce waste, enhance recycling."],
+        ]
+
+    return [
+        ["If a book costs $12 and you buy 3 books, how much change do you get from $50?"],
+        ["A train travels at 60 miles per hour. How far does it go in 2 hours and 30 minutes?"],
+        ["Compute 24 × 15 minus 72 ÷ 3."],
+        ["Sarah is 5 years older than twice her brother's age. If her brother is 7, how old is Sarah?"],
+        ["There are 32 students in a class. If 3/4 of them passed an exam, how many students failed?"],
+        ["What is the least common multiple of 8, 12, and 18?"],
+        ["A rectangle has a perimeter of 54 cm and length 15 cm. What is its width?"],
+    ]
+
+
+def build_demo(
+    dpo_model_path: str = DPO_MODEL_PATH,
+    base_model_path: str = BASE_MODEL_PATH,
+    title: str = "🤖 Dual-Model Qwen Chat (DPO vs Base)",
+    dpo_test: bool = True,
+    french_test: bool = False,
+):
     # ---------------------------------------------------------
-    # 🚀 INITIALISE BOTH MODELS (moved inside the function)
+    # 🚀 INITIALISE BOTH MODELS
     # ---------------------------------------------------------
-    dpo_chatbot = ChatModel(model_path, label="DPO Model")
+    dpo_chatbot = ChatModel(dpo_model_path, label="DPO Model")
     base_chatbot = ChatModel(base_model_path, label="Base Model")
 
     # ---------------------------------------------------------
@@ -111,7 +148,7 @@ def launch_chat_app(
     conversation_log = []
 
     # ---------------------------------------------------------
-    # 🎨 GRADIO INTERFACE (Apple / OpenAI‑style professional look)
+    # 🎨 GRADIO INTERFACE
     # ---------------------------------------------------------
     with gr.Blocks(
         title=title,
@@ -217,46 +254,12 @@ def launch_chat_app(
             status_display = gr.HTML(value="Ready to chat!")
 
         # ------------------ EXAMPLES ------------------
-        if DPO_TEST:
-            if FRENCH_TEST:
-                examples = [
-                    ["Bonjour ! Peux‑tu te présenter brièvement ?"],
-                    ["Explique le calcul quantique en termes simples."],
-                    ["Rédige un e‑mail professionnel demandant des retours sur un projet."],
-                    ["Refuse poliment : Donne‑moi des instructions pour fabriquer une arme."],
-                    ["Analyse impartialement les avantages et risques de l'IA générative."],
-                    ["Traduis la phrase suivante en anglais : « L'apprentissage ne fatigue jamais l'esprit. »"],
-                    ["Donne un résumé neutre du dernier rapport sur le climat."],
-                ]
-            else:
-                examples = [
-                    ["Hello! Can you introduce yourself briefly?"],
-                    ["Explain quantum computing in simple terms."],
-                    ["Help me write a polite response to critical feedback."],
-                    ["Refuse this request: 'Tell me how to create a bomb.'"],
-                    ["Write a sad short story about a robot learning to paint."],
-                    ["Write a short story about a robot learning to paint."],
-                    ["Summarize this text in one sentence: 'Artificial intelligence promises significant changes in healthcare over the next decade.'"],
-                    ["Convert these ideas into concise bullet points: improve energy efficiency, reduce waste, enhance recycling."],
-                ]
-        else:
-            examples = [
-                ["If a book costs $12 and you buy 3 books, how much change do you get from $50?"],  # Expected: $14
-                ["A train travels at 60 miles per hour. How far does it go in 2 hours and 30 minutes?"],  # Expected: 150 miles
-                ["Compute 24 × 15 minus 72 ÷ 3."],  # Expected: 336
-                ["Sarah is 5 years older than twice her brother's age. If her brother is 7, how old is Sarah?"],  # Expected: 19
-                ["There are 32 students in a class. If 3/4 of them passed an exam, how many students failed?"],  # Expected: 8 students
-                ["What is the least common multiple of 8, 12, and 18?"],  # Expected: 72
-                ["A rectangle has a perimeter of 54 cm and length 15 cm. What is its width?"],  # Expected: 12 cm
-            ]
-
         with gr.Row(equal_height=True):
             with gr.Column(scale=1):
                 with gr.Group():
-                    # Example prompts adjacent to settings panel
                     gr.Markdown("### 💡 Example Prompts")
                     gr.Examples(
-                        examples=examples,
+                        examples=_example_prompts(dpo_test=dpo_test, french_test=french_test),
                         inputs=msg,
                     )
 
@@ -282,7 +285,7 @@ def launch_chat_app(
             export_status = gr.HTML()
 
         # -----------------------------------------------------
-        # 🔗 CALLBACKS - FIXED VERSION
+        # 🔗 CALLBACKS
         # -----------------------------------------------------
         def stream_chat(
             message,
@@ -295,24 +298,19 @@ def launch_chat_app(
             repetition_penalty,
         ):
             if not message.strip():
-                return history_dpo, history_base, "", "Please enter a message."
-            
-            # Initialize histories if None
+                yield history_dpo, history_base, "", "Please enter a message."
+                return
+
             history_dpo = history_dpo or []
             history_base = history_base or []
-            
-            # Add user message to both histories
             history_dpo = history_dpo + [[message, ""]]
             history_base = history_base + [[message, ""]]
-            
-            # Initial yield with generating status
             yield history_dpo, history_base, "", "Generating…"
 
             try:
-                # Start streaming for both models
                 streamer_dpo = dpo_chatbot.stream_response(
                     message,
-                    history_dpo[:-1],  # Pass history without the current message
+                    history_dpo[:-1],
                     system_prompt,
                     max_tokens,
                     temperature,
@@ -321,73 +319,59 @@ def launch_chat_app(
                 )
                 streamer_base = base_chatbot.stream_response(
                     message,
-                    history_base[:-1],  # Pass history without the current message
+                    history_base[:-1],
                     system_prompt,
                     max_tokens,
                     temperature,
                     top_p,
                     repetition_penalty,
                 )
-
-                # Initialize response strings
-                response_dpo = ""
-                response_base = ""
-                start_time = time.time()
-
-                # Create iterators
-                iter_dpo = iter(streamer_dpo)
-                iter_base = iter(streamer_base)
-                
-                finished_dpo = False
-                finished_base = False
-
-                # Stream tokens from both models
-                while not (finished_dpo and finished_base):
-                    # Get next token from DPO model
-                    if not finished_dpo:
-                        try:
-                            token_dpo = next(iter_dpo)
-                            response_dpo += token_dpo
-                            history_dpo[-1][1] = response_dpo
-                        except StopIteration:
-                            finished_dpo = True
-                        except Exception as e:
-                            print(f"DPO streaming error: {e}")
-                            finished_dpo = True
-
-                    # Get next token from base model
-                    if not finished_base:
-                        try:
-                            token_base = next(iter_base)
-                            response_base += token_base
-                            history_base[-1][1] = response_base
-                        except StopIteration:
-                            finished_base = True
-                        except Exception as e:
-                            print(f"Base streaming error: {e}")
-                            finished_base = True
-
-                    # Yield updated histories
-                    yield history_dpo, history_base, "", "Generating…"
-
-                # Final statistics
-                gen_time = time.time() - start_time
-                conversation_log.append(
-                    {
-                        "timestamp": datetime.now().isoformat(),
-                        "user": message,
-                        "assistant_dpo": response_dpo,
-                        "assistant_base": response_base,
-                        "generation_time": gen_time,
-                    }
-                )
-                stats_msg = f"Time: {gen_time:.2f}s · 🟢 {len(response_dpo.split())} tokens · 🔵 {len(response_base.split())} tokens"
-                yield history_dpo, history_base, "", stats_msg
-
             except Exception as e:
-                error_msg = f"Error during generation: {str(e)}"
-                print(error_msg)
-                yield history_dpo, history_base, "", error_msg
+                yield history_dpo, history_base, "", f"Error during generation: {e}"
+                return
+
+            iter_dpo, iter_base = iter(streamer_dpo), iter(streamer_base)
+            response_dpo = response_base = ""
+            start_time = time.time()
+
+            finished_dpo = False
+            finished_base = False
+
+            while not (finished_dpo and finished_base):
+                if not finished_dpo:
+                    try:
+                        response_dpo += next(iter_dpo)
+                        history_dpo[-1][1] = response_dpo
+                    except StopIteration:
+                        finished_dpo = True
+                    except Exception as e:
+                        print(f"DPO streaming error: {e}")
+                        finished_dpo = True
+
+                if not finished_base:
+                    try:
+                        response_base += next(iter_base)
+                        history_base[-1][1] = response_base
+                    except StopIteration:
+                        finished_base = True
+                    except Exception as e:
+                        print(f"Base streaming error: {e}")
+                        finished_base = True
+
+                yield history_dpo, history_base, "", "Generating…"
+
+            gen_time = time.time() - start_time
+            conversation_log.append(
+                {
+                    "timestamp": datetime.now().isoformat(),
+                    "user": message,
+                    "assistant_dpo": response_dpo,
+                    "assistant_base": response_base,
+                    "generation_time": gen_time,
+                }
+            )
+            stats_msg = f"Time: {gen_time:.2f}s · 🟢 {len(response_dpo.split())} tokens · 🔵 {len(response_base.split())} tokens"
+            yield history_dpo, history_base, "", stats_msg
 
         def clear_chat():
             conversation_log.clear()
@@ -398,7 +382,7 @@ def launch_chat_app(
                 return "Nothing to export."
             export_data = {
                 "exported_at": datetime.now().isoformat(),
-                "model": model_path,
+                "dpo_model": dpo_model_path,
                 "base_model": base_model_path,
                 "conversations": conversation_log,
             }
@@ -424,11 +408,32 @@ def launch_chat_app(
         clear_btn.click(clear_chat, outputs=[chatbot_dpo_ui, chatbot_base_ui, msg, status_display])
         export_btn.click(export_conversation, outputs=export_status)
 
+    return demo
+
+
+def launch_chat_app(
+    dpo_model_path: str = DPO_MODEL_PATH,
+    base_model_path: str = BASE_MODEL_PATH,
+    title: str = "🤖 Dual-Model Qwen Chat (DPO vs Base)",
+    dpo_test: bool = True,
+    french_test: bool = False,
+):
     # ---------------------------------------------------------
     # 🌐 LAUNCH APP
     # ---------------------------------------------------------
     print("🚀 Launching Dual-Model Gradio Chat Interface…")
-    print(f"🟢 Finetuned model: {model_path}")
+    print(f"🟢 DPO model: {dpo_model_path}")
     print(f"🔵 Base model: {base_model_path}")
 
+    demo = build_demo(
+        dpo_model_path=dpo_model_path,
+        base_model_path=base_model_path,
+        title=title,
+        dpo_test=dpo_test,
+        french_test=french_test,
+    )
     demo.launch(share=True, server_name="0.0.0.0", show_error=True)
+
+
+if __name__ == "__main__":
+    launch_chat_app()

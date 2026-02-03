@@ -1,11 +1,12 @@
-trl 
-transformers 
-datasets 
-accelerate 
-peft 
+trl
+transformers
+datasets
+accelerate
+peft
 bitsandbytes
+gradio
 matplotlib
 wandb
 huggingface-hub
-# # if you want to use vllm as a backend for the rollout - speedsup training for large and real experiments
+# Optional: vLLM backend for faster rollouts in large experiments
 # trl[vllm]
