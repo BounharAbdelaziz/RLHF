@@ -8,9 +8,8 @@ This repo supports a hands-on RLHF tutorial using Qwen2.5. It includes a student
 - Compare a base model vs a tuned model in a live chat UI.
 
 **Repo layout**
-- `main` branch: `main.ipynb` is the full solution notebook.
-- `student` branch: `main.ipynb` is the fill-in-the-blanks notebook.
-- `student.ipynb` (on `main` branch) is the TODO version used to build the student branch.
+- This `student` branch contains the fill-in-the-blanks notebook at `main.ipynb`.
+- The full solution lives in the `main` branch.
 - `chat_app.py` is the Gradio comparison UI.
 - `utils.py` contains the LoRA merge helper.
 - `presentation.pdf` and `presentation.pptx` are the slides.
@@ -21,7 +20,7 @@ This repo supports a hands-on RLHF tutorial using Qwen2.5. It includes a student
 1. `pip install -r requirements.txt`
 2. `huggingface-cli login`
 3. Set `WANDB_API_KEY` in your environment. You can copy `.env.example` to `.env` and export it in your shell.
-4. Open `main.ipynb` (solution) or switch to the `student` branch for the TODO version.
+4. Open `main.ipynb` and follow the TODOs.
 
 **Quickstart (Colab)**
 1. Upload or clone this repo in Colab.

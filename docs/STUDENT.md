@@ -1,6 +1,6 @@
 # Student Guide
 
-Use `student.ipynb` and run cells top to bottom. Cells with `TODO` must be filled before you can continue.
+Use `main.ipynb` and run cells top to bottom. Cells with `TODO` must be filled before you can continue.
 
 **Checklist**
 1. Install dependencies and login to Hugging Face.
