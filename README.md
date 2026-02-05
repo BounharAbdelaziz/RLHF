@@ -29,6 +29,14 @@ This repository demonstrates how to improve language models using **Direct Prefe
 3. Set `WANDB_API_KEY`, `WANDB_PROJECT`, and `WANDB_ENTITY` in your environment (copy `.env.example` to `.env` and export it in your shell).
 4. Open `main.ipynb` (solution) or switch to the `student` branch for the TODO version in `student.ipynb`.
 
+## 📓 Colab Links
+
+**Teacher (Solution Notebook)**  
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/BounharAbdelaziz/RLHF/blob/main/main.ipynb)
+
+**Student (TODO Notebook)**  
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/BounharAbdelaziz/RLHF/blob/student/student.ipynb)
+
 ## 🚀 Quickstart (Colab)
 
 1. Upload or clone this repo in Colab.
