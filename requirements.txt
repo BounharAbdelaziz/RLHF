@@ -1,9 +1,13 @@
-trl 
-transformers 
-datasets 
-accelerate 
-peft 
+trl
+transformers
+datasets
+accelerate
+peft
 bitsandbytes
 gradio
 matplotlib
 wandb
+huggingface-hub
+python-dotenv
+# Optional: vLLM backend for faster rollouts in large experiments
+# trl[vllm]
