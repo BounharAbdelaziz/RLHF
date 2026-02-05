@@ -1,5 +1,11 @@
 # 🤖 RLHF & RLVR Training Workshop (DPO + GRPO)
 
+[![Colab Teacher](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/BounharAbdelaziz/RLHF/blob/main/main.ipynb)
+[![Colab Student](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/BounharAbdelaziz/RLHF/blob/student/student.ipynb)
+[![Stars](https://img.shields.io/github/stars/BounharAbdelaziz/RLHF?style=flat)](https://github.com/BounharAbdelaziz/RLHF)
+[![Forks](https://img.shields.io/github/forks/BounharAbdelaziz/RLHF?style=flat)](https://github.com/BounharAbdelaziz/RLHF)
+[![License](https://img.shields.io/github/license/BounharAbdelaziz/RLHF?style=flat)](https://github.com/BounharAbdelaziz/RLHF/blob/main/LICENSE)
+
 This repository demonstrates how to improve language models using **Direct Preference Optimization (DPO)** and **Group Relative Policy Optimization (GRPO)**. It is designed for a hands-on tutorial with a **student branch** (TODOs) and a **solution branch** (main branch).
 
 ## 🧠 What You’ll Learn
@@ -29,37 +35,16 @@ This repository demonstrates how to improve language models using **Direct Prefe
 3. Set `WANDB_API_KEY`, `WANDB_PROJECT`, and `WANDB_ENTITY` in your environment (copy `.env.example` to `.env` and export it in your shell).
 4. Open `main.ipynb` (solution) or switch to the `student` branch for the TODO version in `student.ipynb`.
 
-## 📓 Colab Links
-
-**Teacher (Solution Notebook)**  
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/BounharAbdelaziz/RLHF/blob/main/main.ipynb)
-
-**Student (TODO Notebook)**  
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/BounharAbdelaziz/RLHF/blob/student/student.ipynb)
-
 ## 🚀 Quickstart (Colab)
 
-1. Upload or clone this repo in Colab.
-```bash
-!git clone https://github.com/BounharAbdelaziz/RLHF.git
-```
-2. Switch to the student branch
-```python
-import os
+**Recommended:** open the notebook directly using the Colab badges above.
 
-# Change to the repository directory
-# This changes the Python process's current working directory
-os.chdir('RLHF')
-```
-```bash
-# Now, execute this git command to switch to the 'student' branch.
-!git checkout student
-
-# Verify the current branch
-!git branch
-
-# then open student.ipynb and start working :)
-```
+If you prefer to clone manually:
+1. Clone the repo:
+   ```bash
+   !git clone https://github.com/BounharAbdelaziz/RLHF.git
+   ```
+2. Open `student.ipynb` (student branch) or `main.ipynb` (solution) from the Files sidebar.
 3. Run the setup cells at the top of the notebook.
 
 ## 🏗️ Project Structure (High Level)
