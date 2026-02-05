@@ -8,5 +8,6 @@ gradio
 matplotlib
 wandb
 huggingface-hub
+python-dotenv
 # Optional: vLLM backend for faster rollouts in large experiments
 # trl[vllm]

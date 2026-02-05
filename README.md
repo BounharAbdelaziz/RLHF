@@ -11,8 +11,7 @@ This repository demonstrates how to improve language models using **Direct Prefe
 ## 📦 Repo Layout
 
 - `main` branch: `main.ipynb` is the full solution notebook.
-- `student` branch: `main.ipynb` is the fill-in-the-blanks notebook.
-- `student.ipynb` (on `main`) is the TODO version used to build the student branch.
+- `student` branch: `student.ipynb` is the fill-in-the-blanks notebook.
 - `chat_app.py` is the Gradio comparison UI.
 - `utils.py` contains the LoRA merge helper.
 - `presentation.pdf` and `presentation.pptx` are the slides.
@@ -27,8 +26,8 @@ This repository demonstrates how to improve language models using **Direct Prefe
    ```bash
    huggingface-cli login
    ```
-3. Set `WANDB_API_KEY` in your environment (copy `.env.example` to `.env` and export it in your shell).
-4. Open `main.ipynb` (solution) or switch to the `student` branch for the TODO version.
+3. Set `WANDB_API_KEY`, `WANDB_PROJECT`, and `WANDB_ENTITY` in your environment (copy `.env.example` to `.env` and export it in your shell).
+4. Open `main.ipynb` (solution) or switch to the `student` branch for the TODO version in `student.ipynb`.
 
 ## 🚀 Quickstart (Colab)
 
@@ -40,6 +39,7 @@ This repository demonstrates how to improve language models using **Direct Prefe
 ```
 .
 ├── main.ipynb         # DPO & GRPO training, merging, testing (solution)
+├── student.ipynb      # TODO version (student branch)
 ├── chat_app.py        # Gradio chat app for model comparison
 ├── utils.py           # Utilities (merging, testing)
 ├── docs/              # Student & instructor guides
