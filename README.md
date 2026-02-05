@@ -33,7 +33,27 @@ This repository demonstrates how to improve language models using **Direct Prefe
 ## 🚀 Quickstart (Colab)
 
 1. Upload or clone this repo in Colab.
-2. Run the setup cells at the top of the notebook.
+```bash
+!git clone https://github.com/BounharAbdelaziz/RLHF.git
+```
+2. Switch to the student branch
+```python
+import os
+
+# Change to the repository directory
+# This changes the Python process's current working directory
+os.chdir('RLHF')
+```
+```bash
+# Now, execute this git command to switch to the 'student' branch.
+!git checkout student
+
+# Verify the current branch
+!git branch
+
+# then open student.ipynb and start working :)
+```
+3. Run the setup cells at the top of the notebook.
 
 ## 🏗️ Project Structure (High Level)
 
